@@ -1,0 +1,38 @@
+---
+title: "First draft"
+output: html_document
+---
+
+The model structure
+
+First we have
+
+$\mu_j$ the mean abilities of a class to do skill $j\in \{+,-,\times,\div, \int,\frac{d}{dx}\}$ and $\sigma_i$ the standard deviation of the class at each of these abilities.
+
+$$
+\mu_{1,j} \sim N(0,1) 
+$$
+
+$$
+\sigma_j \sim Exp(1)
+$$
+
+then the abilities of each individual student the $k$'th student will be $\alpha_{i,j,k}$
+
+$$
+\alpha_{i,j,k}|\mu_{1,j},\sigma_j,\alpha_{i,j,k-1} \sim N(\mu_{1,j} +\alpha_{i-1,j,k},\sigma_i^2)
+$$
+
+this update happens every test
+
+we want the value of the individuals abilities to also vary relative to the group over time...
+
+so when we initialize we have the initial distribution of abilities mean of the class and then i vary the individuals abilities can fluctuate over time
+
+now we have a the steps in the problem
+
+$S_{i,j,k,l}|S_{i,j^*,k,l-1},\alpha_{ijk} \sim Bern(S_l\cdot(logistic(\alpha_{ijk}-\frac{1}{t}))$
+
+So to simplify this we will only consider 1 test.
+
+Thus we will have a bunch of students and only one test.
