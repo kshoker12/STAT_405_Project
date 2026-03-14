@@ -1,0 +1,84 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+Two related real-world candidate datasets appropriate for the selected theme are clearly described (one main, one back-up)
+Show the structure or head of the dataframe.
+
+
+## GAME PLAn 
+
+nce you download the files, follow these steps:
+
+Open subject_metadata.csv to find the SubjectId that corresponds to "Algebra."
+
+Open question_metadata.csv to find all QuestionIds that are linked to those Algebra IDs.
+
+Filter train_data.csv for those QuestionIds to get the student response records (User ID, Correctness, and Time).
+
+View the corresponding image in the images/ folder to see the actual math problem
+
+```{r, echo=FALSE}}
+# Load one candidate dataset
+train_data <- read.csv("data/train_data/train_task_1_2.csv")
+
+# Show the first 6 rows
+head(train_data)
+```
+
+```{r}
+# Load the other key datasets (task 1/2)
+subject_metadata <- read.csv("data/metadata/subject_metadata.csv")
+question_metadata <- read.csv("data/metadata/question_metadata_task_1_2.csv")
+student_metadata <- read.csv("data/metadata/student_metadata_task_1_2.csv")
+answer_metadata <- read.csv("data/metadata/answer_metadata_task_1_2.csv")
+
+# Show the first 6 rows of each
+head(subject_metadata)
+head(question_metadata)
+head(student_metadata)
+head(answer_metadata)
+```
+
+```{r}
+# Example: build a small joined subset with
+# - problem ID
+# - student ID
+# - whether correct
+# - estimated time taken (seconds)
+#
+# Note: There is no explicit "time taken" column in train_task_1_2.csv.
+# Here we estimate it as the time difference between consecutive answers
+# by the same student using DateAnswered.
+
+# Keep a small subset for demonstration
+subset_train <- train_data[1:3000, c("QuestionId", "UserId", "AnswerId", "IsCorrect")]
+subset_answer <- answer_metadata[, c("AnswerId", "DateAnswered")]
+
+# Join on AnswerId
+joined_subset <- merge(subset_train, subset_answer, by = "AnswerId", all.x = TRUE)
+
+# Parse answer timestamp
+joined_subset$DateAnswered <- as.POSIXct(
+	joined_subset$DateAnswered,
+	format = "%Y-%m-%d %H:%M:%OS",
+	tz = "UTC"
+)
+
+# Sort by student and answer time
+joined_subset <- joined_subset[order(joined_subset$UserId, joined_subset$DateAnswered), ]
+
+# Estimate time taken per response (within each student)
+joined_subset$time_taken_seconds <- ave(
+	as.numeric(joined_subset$DateAnswered),
+	joined_subset$UserId,
+	FUN = function(x) c(NA, diff(x))
+)
+
+# Final structure requested
+final_example <- joined_subset[, c("QuestionId", "UserId", "IsCorrect", "time_taken_seconds")]
+names(final_example) <- c("problem_id", "student_id", "is_correct", "time_taken_seconds")
+
+head(final_example, 10)
+```

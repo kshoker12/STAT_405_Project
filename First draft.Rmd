@@ -1,14 +1,17 @@
 ---
 title: "STAT 405 - Project Proposal"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 # Team
+
 Joseph Lardner-Burke - 44848893
 
 Karn Shoker - 59310094
 
-**Repo:** https://github.com/kshoker12/STAT_405_Project
+**Repo:** <https://github.com/kshoker12/STAT_405_Project>
 
 # Datasets
 
@@ -17,9 +20,10 @@ Karn Shoker - 59310094
 **Backup:**
 
 # Scientific Question
-**Main Research Question:** Infer a student's ability to do algebra problems based on their test performance, measuring the observed question, the student's answer, and the time to complete question. 
 
-**Motivation**: We chose this research question because inference questions such as this are the core for automatic tutoring systems which have to make real-time inference to assist students and recommend catered problems to allow student to improve. We are both interested in potentially making a tutoring system so exploring this research question can give us the insights and develop knowledge in Bayesian Inference to one day develop this. 
+**Main Research Question:** Infer a student's ability to do algebra problems based on their test performance, measuring the observed question, the student's answer, and the time to complete question.
+
+**Motivation**: We chose this research question because inference questions such as this are the core for automatic tutoring systems which have to make real-time inference to assist students and recommend catered problems to allow student to improve. We are both interested in potentially making a tutoring system so exploring this research question can give us the insights and develop knowledge in Bayesian Inference to one day develop this.
 
 # Methodology
 
@@ -55,11 +59,33 @@ $S_{i,j,k,l}|S_{i,j^*,k,l-1},\alpha_{ijk} \sim Bern(S_l\cdot(logistic(\alpha_{ij
 
 So to simplify this we will only consider 1 test.
 
-Thus we will have a bunch of students and only one test for now. 
+Thus we will have a bunch of students and only one test for now.
 
 We will perform this Bayesian inference using MCMC methods explored in class.
 
 # Team Member Contributions
-- Equal distribution (roughly 50:50 split) across writing, data handling, coding, and analysis and we will split these tasks into phases and delegate specific tasks at the beginning of each phase. 
-- Some tasks depend on others so we will coordinate regularly and have meetings early on. 
-- We will use meaningful commit messages on GitHub for clarity and review each others commits regularly. 
+
+-   Equal distribution (roughly 50:50 split) across writing, data handling, coding, and analysis and we will split these tasks into phases and delegate specific tasks at the beginning of each phase.
+-   Some tasks depend on others so we will coordinate regularly and have meetings early on.
+-   We will use meaningful commit messages on GitHub for clarity and review each others commits regularly.
+
+# Code headers
+
+```{r}
+# Load one candidate dataset
+train_data <- read.csv("data/train_data/train_task_1_2.csv")
+
+# Show the first 6 rows
+head(train_data)
+
+```
+
+## Actual data set 
+
+<https://dqanonymousdata.blob.core.windows.net/neurips-public/data.zip>
+
+from <https://www.eedi.com/research>
+
+## Backup data set 
+
+<https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics/data>
