@@ -1,7 +1,27 @@
 ---
-title: "First draft"
+title: "STAT 405 - Project Proposal"
 output: html_document
 ---
+
+# Team
+Joseph Lardner-Burke - 44848893
+
+Karn Shoker - 59310094
+
+**Repo:** https://github.com/kshoker12/STAT_405_Project
+
+# Datasets
+
+**Main:**
+
+**Backup:**
+
+# Scientific Question
+**Main Research Question:** Infer a student's ability to do algebra problems based on their test performance, measuring the observed question, the student's answer, and the time to complete question. 
+
+**Motivation**: We chose this research question because inference questions such as this are the core for automatic tutoring systems which have to make real-time inference to assist students and recommend catered problems to allow student to improve. We are both interested in potentially making a tutoring system so exploring this research question can give us the insights and develop knowledge in Bayesian Inference to one day develop this. 
+
+# Methodology
 
 The model structure
 
@@ -20,7 +40,7 @@ $$
 then the abilities of each individual student the $k$'th student will be $\alpha_{i,j,k}$
 
 $$
-\alpha_{i,j,k}|\mu_{1,j},\sigma_j,\alpha_{i,j,k-1} \sim N(\mu_{1,j} +\alpha_{i-1,j,k},\sigma_i^2)
+\alpha_{i,j,k}|\mu_{1,j},\sigma_j,\alpha_{i-1,j,k} \sim N(\mu_{1,j} +\alpha_{i-1,j,k},\sigma_i^2)
 $$
 
 this update happens every test
@@ -35,4 +55,11 @@ $S_{i,j,k,l}|S_{i,j^*,k,l-1},\alpha_{ijk} \sim Bern(S_l\cdot(logistic(\alpha_{ij
 
 So to simplify this we will only consider 1 test.
 
-Thus we will have a bunch of students and only one test.
+Thus we will have a bunch of students and only one test for now. 
+
+We will perform this Bayesian inference using MCMC methods explored in class.
+
+# Team Member Contributions
+- Equal distribution (roughly 50:50 split) across writing, data handling, coding, and analysis and we will split these tasks into phases and delegate specific tasks at the beginning of each phase. 
+- Some tasks depend on others so we will coordinate regularly and have meetings early on. 
+- We will use meaningful commit messages on GitHub for clarity and review each others commits regularly. 
