@@ -1,0 +1,50 @@
+Basically we are building a data frame with main.py
+
+
+we want only algebra problems and then want to look and check that this makes sense through the images of the problems
+ie are these the problems we are actually able to do
+
+as for our data frame we are including some important variables
+specifically
+"question_id": question_id,
+"user_id": int(row["UserId"]),
+"is_correct": int(row["IsCorrect"]),
+"correct_answer": row["CorrectAnswer"],
+"answer": row["AnswerValue"],
+"img_url"
+
+what else we could include?
+well we could include the age that the user did the problem at since we have the age of users and the date of completion of each problem
+
+note rn our data space looks different than we hoped
+
+we have manny users for only several problems!
+That is not perfectly great but we will have to make do.
+we will be able to asses the difficulty of the problems much better than the ability of the users!
+
+Next steps
+
+first we will need to go through the algebra_images_task_1_2
+and determine whether these are the correct type of problems
+
+second we will need to go through the images not in algebra_images_task_1_2
+to determine if there are any useful problems that we missed(ie of the structure we are trying to analyse)
+
+third we will need to extract the type actual problem text from the images!
+
+
+forth we can then break these equations up into solving for the correct solution
+
+fifth determine the abilities through bayesian inference (our actual model!)
+
+extensions
+    we may be able to determine how long a user spends on a problem through the differencing timestamps of problems by UserId
+
+    we may introduce different models for the problem 
+    
+    implement the tree structure of skills and to it on this
+
+    to be super fancy we can actually use the incorrect answer to understand what the users actual skills are even better by determine what step they did wrong to get to that wrong answer!
+    - hopefully each of these wrong answers would happen if someone made one wrong step
+
+    lastly we may be able to use more data than expected by figuring out the steps of the other problems and using that data as well possibly
