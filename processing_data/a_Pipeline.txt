@@ -1,0 +1,14 @@
+#TODO
+
+1.
+Extract the text and check that the math questions are actually algebra based from the 
+/algebra_images_task_1_2
+
+Note that as a start i am using tesseract (the brew package) to use as computer vision.
+
+
+2. 
+Then we need to analyse the data and extract the structure of the exquation
+as well as the structure of the answers
+
+

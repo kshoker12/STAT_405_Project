@@ -1,0 +1,7 @@
+#TODO Backup plan
+
+1.
+This is just in cases we cannot extract the text.
+
+This model will simply work by mixxing the this and finding a math ability.
+Note that this is simple as we already have a tree structure for the abilities
