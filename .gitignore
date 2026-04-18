@@ -2,7 +2,7 @@ data/
 *.pdf
 *.html
 
-*/
+
 
 # Environment variables and API keys
 .env
