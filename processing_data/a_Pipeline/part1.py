@@ -13,13 +13,23 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_IMAGES_DIR = PROJECT_ROOT / "data" / "algebra_images_task_1_2"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "algebra_images_task_1_2_ocr.csv"
 
+# Define output format specifications
+OUTPUT_FORMATS = {
+    "text": "Extract the mathematical equation from this image that is read the question and then figure out the equation required to solve it and write that as the equation and include the confidence level in this. Then write out equation for each of the options. Then lastly state whether the question has a valid answer given the options.",
+    "structured": "Extract text and return as JSON with fields: {question:[{equation: string, confidence: 'high'|'medium'|'low'}], options:[{letter: string, equation: string, confidence: 'high'|'medium'|'low'}],isValid: boolean}",
+    "markdown": "Extract text and format as markdown with headers for different sections if applicable.",
+}
 
-def extract_text_from_image(image_path: Path) -> str:
+
+def extract_text_from_image(image_path: Path, output_format: str = "text") -> str:
 	"""Extract text from an image using Claude Vision API."""
 	client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 	
 	with open(image_path, "rb") as image_file:
 		image_data = base64.standard_b64encode(image_file.read()).decode("utf-8")
+	
+	# Get the format-specific prompt
+	format_prompt = OUTPUT_FORMATS.get(output_format, OUTPUT_FORMATS["text"])
 	
 	message = client.messages.create(
 		model="claude-3-5-sonnet-20241022",
@@ -38,7 +48,7 @@ def extract_text_from_image(image_path: Path) -> str:
 					},
 					{
 						"type": "text",
-						"text": "Extract all visible text from this image exactly as it appears. Include mathematical symbols, numbers, and all text content.",
+						"text": format_prompt,
 					},
 				],
 			}
@@ -48,7 +58,7 @@ def extract_text_from_image(image_path: Path) -> str:
 	return message.content[0].text
 
 
-def extract_directory(images_dir: Path, output_path: Path, pattern: str = "*.jpg") -> int:
+def extract_directory(images_dir: Path, output_path: Path, pattern: str = "*.jpg", output_format: str = "text") -> int:
 	image_paths = sorted(images_dir.glob(pattern))
 	output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -58,7 +68,7 @@ def extract_directory(images_dir: Path, output_path: Path, pattern: str = "*.jpg
 
 		for i, image_path in enumerate(image_paths, start=1):
 			try:
-				text = extract_text_from_image(image_path)
+				text = extract_text_from_image(image_path, output_format=output_format)
 				writer.writerow(
 					{
 						"image_name": image_path.name,
@@ -83,6 +93,17 @@ def parse_args() -> argparse.Namespace:
 	parser.add_argument("--images-dir", type=Path, default=DEFAULT_IMAGES_DIR)
 	parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
 	parser.add_argument("--pattern", default="*.jpg", help="Glob pattern for images inside the folder.")
+	parser.add_argument(
+		"--format",
+		choices=list(OUTPUT_FORMATS.keys()),
+		default="text",
+		help="Output format for extracted text.",
+	)
+	parser.add_argument(
+		"--test-image",
+		type=Path,
+		help="Test on a single image file (prints result instead of saving to CSV).",
+	)
 	return parser.parse_args()
 
 
@@ -95,7 +116,22 @@ def main() -> None:
 			"Please set it to your Claude API key and try again."
 		)
 	
-	count = extract_directory(args.images_dir, args.output, args.pattern)
+	# Test on a single image if specified
+	if args.test_image:
+		if not args.test_image.exists():
+			raise SystemExit(f"Image file not found: {args.test_image}")
+		
+		print(f"Testing on single image: {args.test_image}")
+		print(f"Output format: {args.format}")
+		print("-" * 80)
+		
+		result = extract_text_from_image(args.test_image, output_format=args.format)
+		print(result)
+		print("-" * 80)
+		return
+	
+	# Process entire directory
+	count = extract_directory(args.images_dir, args.output, args.pattern, output_format=args.format)
 	print(f"\nExtracted text from {count} images into {args.output}")
 
 
