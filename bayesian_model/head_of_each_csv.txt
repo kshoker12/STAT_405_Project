@@ -1,0 +1,20 @@
+
+# answer_metadata_task_1_2.csv
+
+AnswerId,DateAnswered,Confidence,GroupId,QuizId,SchemeOfWorkId
+11808339.0,2020-03-17 07:55:00.000,,4186,14854,
+
+# question_metadata_task_1_2.csv
+
+QuestionId,SubjectId
+13090,"[3, 32, 71, 77, 141, 185, 186, 214]"
+
+# student_metadata_task_1_2.csv
+
+UserId,Gender,DateOfBirth,PremiumPupil
+58022,2,2006-08-01 00:00:00.000,1.0
+
+# subject_metadata.csv
+
+SubjectId,Name,ParentId,Level
+3,Maths,NULL,0

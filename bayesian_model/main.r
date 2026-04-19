@@ -26,11 +26,11 @@ stan_data <- list(
 )
 fit_preview <- mod$sample(
   data = stan_data,
-  chains = 2,
-  parallel_chains = 2,
-  iter_warmup = 200,
-  iter_sampling = 200,
-  refresh = 50,
+  chains = 1,
+  parallel_chains = 1,
+  iter_warmup = 50,
+  iter_sampling = 100,
+  refresh = 10,
   show_messages = TRUE
 )
 fit_preview$summary()
