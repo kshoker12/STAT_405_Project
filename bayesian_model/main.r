@@ -1,3 +1,4 @@
+
 library(arrow)
 library(dplyr)
 library(tidyr)
@@ -184,23 +185,46 @@ cat("n_skill_entries:", stan_data$n_skill_entries, "\n")
 cat("Skill sparsity: ",
     round(1 - stan_data$n_skill_entries / (n_questions * K), 3), "\n")
 
-# ── Compile and sample ────────────────────────────────────────────────────────
-model <- cmdstan_model(
-  "irt_model.stan",
-  cpp_options = list(
-    STAN_THREADS    = TRUE,
-    STAN_CPP_OPTIMS = TRUE
-  )
+
+
+
+
+
+
+model_hmc <- cmdstan_model(
+  "main.stan",
+  cpp_options = list(STAN_THREADS = TRUE, STAN_CPP_OPTIMS = TRUE)
 )
 
-fit <- model$variational(
-  data = stan_data,
-  output_samples = 1000,
-  iter = 10000,
-  tol_rel_obj = 0.001,
-  refresh = 500
+model_vi <- cmdstan_model(
+  "VarInf.stan",
+  cpp_options = list(STAN_CPP_OPTIMS = TRUE)  # no THREADS needed for VI
 )
 
+# ── Pathfinder first (best bang for buck) ─────────────────────────────────
+fit_pf <- model_vi$pathfinder(
+  data            = stan_data,
+  num_paths       = 4,
+  draws           = 2000,
+  max_lbfgs_iters = 200,
+  refresh         = 100
+)
+
+# ── Mean-field VI if pathfinder struggles ─────────────────────────────────
+fit_vi <- model_vi$variational(
+  data         = stan_data,
+  algorithm    = "meanfield",
+  iter         = 20000,
+  tol_rel_obj  = 0.0005,   # tighter than default for IRT
+  grad_samples = 3,        # average over 3 gradient samples per step
+  elbo_samples = 200,      # more samples for ELBO evaluation
+  refresh      = 500
+)
+
+# Check VI converged — if ELBO is still moving at iter 20000, increase iter
+fit_vi$summary(c("mu_skill", "sigma_skill", "gamma_base", "alpha"))
+
+    
 # fit <- model$sample(
 #   data              = stan_data,
 #   chains            = 4,
@@ -213,7 +237,7 @@ fit <- model$variational(
 #   refresh           = 50
 # )
 
-fit$cmdstan_diagnose()
-fit$summary(c("mu_skill", "sigma_skill", "beta_age", "beta_gender",
-              "gamma_base", "gamma_fast_delta", "alpha",
-              "mu_log_time", "sigma_log_time")) |> print(n = 40)
+# fit$cmdstan_diagnose()
+# fit$summary(c("mu_skill", "sigma_skill", "beta_age", "beta_gender",
+#               "gamma_base", "gamma_fast_delta", "alpha",
+#               "mu_log_time", "sigma_log_time")) |> print(n = 40)
