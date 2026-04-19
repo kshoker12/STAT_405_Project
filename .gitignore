@@ -1,7 +1,7 @@
 data/
 *.pdf
 *.html
-
+processing/processed_data/
 
 
 # Environment variables and API keys
