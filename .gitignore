@@ -2,6 +2,8 @@ data/
 *.pdf
 *.html
 processing/processed_data/
+output/all_student_profiles.csv
+
 
 
 # Environment variables and API keys
