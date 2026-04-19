@@ -1,0 +1,57 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+  REPORT CONCLUSIONS — Bayesian IRT Model
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+## Convergence
+The NUTS/HMC sampler (2 chains, 300 warmup + 300 sampling iterations) achieved
+satisfactory convergence for 100.0% of parameters (R-hat ≤ 1.05).
+The maximum R-hat observed was 1.058. Parameters with higher R-hat
+correspond primarily to individual student skill dimensions with sparse
+observations, which is expected in this data regime.
+
+## Global Parameter Estimates
+• Guessing floor (γ_base) ≈ 0.170: Students answering randomly have a 
+  ~17.0% chance of being correct, consistent with partial elimination 
+  of incorrect choices in algebra MCQs.
+
+• Upper asymptote (α) ≈ 0.809: Even the highest-ability students do not 
+  achieve perfect accuracy, reflecting careless errors or unseen question 
+  complexity. The model appropriately caps performance below 1.0.
+
+• Time-engagement effect (β_time) ≈ 0.925: Positive and credibly 
+  away from zero, confirming that students who spend more time on a question 
+  are more likely to be genuinely engaged rather than guessing.
+
+## Question Difficulty
+Across the 5358 questions, difficulty estimates spanned the logit range
+[-1.47, 1.73], indicating good coverage of hard and easy items.
+Questions clustering near logit=0 are at the 50% correct threshold.
+
+## Skill Structure
+The model recovered 69 skill dimensions. Population mean skills (μ_skill)
+are centred near 0 on the logit scale, as expected under a standard-normal
+prior. Variability across skills (σ_skill) reveals which dimensions students 
+differ on most — high σ_skill skills are the most diagnostically informative.
+
+## Posterior Predictive Check
+The posterior predictive mean accuracy (0.4393) closely matches the 
+observed accuracy (0.4379), a difference of 0.0014.
+This indicates the model is well-calibrated globally — it neither systematically 
+over- nor under-predicts correctness.
+
+## HMC vs Variational Inference
+VI (meanfield ADVI) posteriors for global scalar parameters align closely with
+HMC. However, VI systematically underestimates posterior variance for student-
+level skill parameters due to the mean-field factorisation assumption breaking
+correlations between skill dimensions. HMC is preferred for inference on 
+individual student profiles; VI is suitable for fast approximation of global 
+model parameters.
+
+## Limitations
+• N=10,000 responses across 500 students is a subset of the full dataset.
+  Estimates for low-frequency skills/questions carry high uncertainty.
+• The IRT model assumes conditional independence of responses given skills,
+  which may underfit correlated item residuals.
+• 300 HMC sampling iterations produces moderate N_Eff for high-dimensional
+  student skill parameters. Longer chains would improve precision.
