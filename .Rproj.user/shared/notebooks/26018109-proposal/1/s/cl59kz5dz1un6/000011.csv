@@ -1,0 +1,5 @@
+"0","# Load one candidate dataset"
+"0","train_data <- read.csv(""data/train_data/train_task_1_2.csv"")"
+"0",""
+"0","# Show the first 6 rows"
+"0","head(train_data)"

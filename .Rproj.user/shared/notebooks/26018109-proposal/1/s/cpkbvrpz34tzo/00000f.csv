@@ -1,0 +1,8 @@
+"0","# Load the other key datasets (task 1/2)"
+"0","subject_metadata <- read.csv(""data/metadata/subject_metadata.csv"")"
+"0","question_metadata <- read.csv(""data/metadata/question_metadata_task_1_2.csv"")"
+"0","student_metadata <- read.csv(""data/metadata/student_metadata_task_1_2.csv"")"
+"0","answer_metadata <- read.csv(""data/metadata/answer_metadata_task_1_2.csv"")"
+"0",""
+"0","# Show the first 6 rows of each"
+"0","head(subject_metadata)"
