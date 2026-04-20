@@ -1,7 +1,0 @@
-metric,n_parameters
-$N_{\mathrm{eff}} < 100$,18
-$N_{\mathrm{eff}} < 400$,4018
-$400 \leq N_{\mathrm{eff}} \leq 1000$,159092
-$N_{\mathrm{eff}} > 1000$,133246
-$N_{\mathrm{eff}}$ is NaN or non-finite,0
-Total rows in summary,296356
