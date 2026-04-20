@@ -1,0 +1,7 @@
+metric,n_parameters
+$N_{\mathrm{eff}} < 100$,66183
+$N_{\mathrm{eff}} < 400$,72954
+$400 \leq N_{\mathrm{eff}} \leq 1000$,32251
+$N_{\mathrm{eff}} > 1000$,3613
+$N_{\mathrm{eff}}$ is NaN or non-finite,0
+Total rows in summary,108818

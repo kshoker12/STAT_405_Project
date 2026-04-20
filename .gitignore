@@ -2,6 +2,7 @@ data/
 *.pdf
 *.html
 processing/processed_data/
+processing_naive/processed_data/
 output/all_student_profiles.csv
 
 

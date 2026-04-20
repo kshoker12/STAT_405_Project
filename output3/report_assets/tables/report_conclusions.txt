@@ -1,0 +1,10 @@
+## Auto-generated report bullets
+- Model: **full (K=69)** | fitted outputs folder: `output3`
+- Worst $\hat{R}$: **173.1023** | counts: >1.05 **55867**, >1.01 **74450**, in [0.99,1.01] **34368**
+- $N_{eff}$: <100 **66183**, <400 **72954**, in [400,1000] **32251**, >1000 **3613**
+- Median $N_{eff}$: **10.1**
+- PPC: posterior mean of per-draw mean accuracy **0.3209** vs observed **0.3204** (update `OBSERVED_RESPONSE_MEAN` if sample changed).
+- LOO (MC log-mean-exp): total ELPD **-14334.6** | per-obs **-0.5663**
+- Cross-model (MC): see `tables/loo_cross_model_mc.csv` comparing `output3` vs `naive_output`.
+- Demographics (90% CI excludes 0): beta_age[4]=Decimals: mean=-1.055; beta_age[5]=Factors, Multiples and Primes: mean=-1.022; beta_age[8]=Indices, Powers and Roots: mean=-1.311; beta_age[10]=Percentages: mean=-1.965; beta_age[19]=Writing and Simplifying Expressions: mean=0.819 ...
+  Gender: beta_gender[8]=Indices, Powers and Roots: mean=-0.205; beta_gender[44]=Basic Arithmetic: mean=-0.685

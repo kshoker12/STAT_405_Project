@@ -1,0 +1,7 @@
+metric,n_parameters
+$\hat{R} > 1.05$,0
+$\hat{R} > 1.01$,178
+$0.99 \leq \hat{R} \leq 1.01$,34223
+$\hat{R} < 0.99$,0
+$\hat{R}$ is NaN,0
+Total rows in summary,34401

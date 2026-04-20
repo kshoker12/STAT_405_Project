@@ -1,0 +1,3 @@
+model,folder,elpd_mc_sum,elpd_mc_per_obs,delta_this_minus_other
+this_run,output,-5759.083152086503,-0.5759083152086503,97.65392484483891
+other_run,naive_output,-5856.737076931342,-0.5856737076931342,97.65392484483891
