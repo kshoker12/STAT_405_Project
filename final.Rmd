@@ -4,10 +4,12 @@ author: "Karn Shoker - 59310094; Joseph Lardner-Burke - 44848893"
 date: "2026-04-19"
 output: pdf_document
 fontsize: 10pt
-geometry: margin=0.70in
+geometry: margin=0.60in
 header-includes:
   - \usepackage{float}
   - \usepackage{placeins}
+  - \usepackage{hyperref}
+  - \usepackage{mathrsfs}
   - \usepackage[font=small,labelfont=bf]{caption}
   - \usepackage{setspace}
   - \setstretch{0.97}
@@ -19,9 +21,13 @@ header-includes:
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
-# 1 Introduction 
+```{r repo-link, results='asis', echo=FALSE, comment=NA}
+knitr::asis_output("\\begin{center}\\footnotesize Repository: \\url{https://github.com/kshoker12/STAT_405_Project}\\end{center}\n")
+```
 
-## 1.1 Background & Motivation 
+### 1 Introduction 
+
+### 1.1 Background & Motivation 
 “It ain’t what you don’t know that gets you into trouble. It’s what you know for sure that just ain’t so" ~ Mark Twain
 
 Mathematical education modelling is a vital task today. 
@@ -29,11 +35,11 @@ This matters for two reasons. We are living in an increasingly technical world w
 
 An important question is, "Why then are we modelling the mathematics abilities of students rather than simply just giving them more problems? Why is this practice of modeling important?" It is important because for students learning mathematics one of the most important things is knowing what you do not yet know. That is knowing your abilities as this enables targeted practice for students in learning what they do not yet know. For governments and teachers the same interest is there. We perform tests to try to understand where a class is academically and adjust the syllabus accordingly, focusing on weak spots and reclarifying what is necessary. Governments may recognise bias in the education system and seek to correct certain strata of the population in particular geographies performing worse than others. Furthermore governments are able to get feedback on particular interventions to see if they are actually working. Thus measuring students' abilities enables resource planning on behalf of students, educators and governments.
 
-## 1.2 Scientific Question 
+### 1.2 Scientific Question 
 
 The central question of this paper is can we, using a bayesian IRT framework, work out the abilities of students and the difficulty of problems accurately to discriminate between students and predict if a student will answer a question correctly or incorrectly.
 
-# 2 Literature Review
+### 2 Literature Review
 
 This paper deals with the problem of modelling users' abilities from multiple choice questions in the subject of mathematics. This fits into a broader class of literature of intense focus called Item Response Theory, IRT,  which is at the intersection of the fields of education and psychology.
 
@@ -43,14 +49,14 @@ Traditional modeling techniques, specifically frequentist approaches, which were
 
 Bayesian modelling became more popular in recent years in light of these glaring issues. This is obvious to a bayesian due to well specified models being calibrated for all data sizes allowed. Furthermore Bayesian models are extremely flexible in that adding layers to Hierarchical models can be simple. Furthermore bayesian modelling is particularly useful in this context due to its implicit focus on uncertainty in parameter estimates. Another shine as demonstrated in (Bainter & Foster, 2019) is that Bayesian estimation is great when some responses are sparsely endorsed (as found in our data set). One final note is that since we are able to simply simulate from a model we can check very easily for bugs in our code. Specific articles that have begun demonstrating the usefulness of Bayesian modeling in IRT include (Béguin & Glas 2001; Bürkner, 2021, Finch & French 2019, Sheng, 2012, Zhang et al 2021.) 
 
-# 3 Dataset
+### 3 Dataset
 
-## 3.1 Data
+### 3.1 Data
 We analyze digital mathematics practice data released for the NeurIPS 2020 Education Challenge. The raw event logs record student–question interactions, including correctness, timestamps, and question- and student-level metadata. After joining question metadata, student metadata, and answer timestamps, the processed training table contains **17,250,577** answer-level observations.
 
 Because full Bayesian inference in Stan is computationally expensive at this scale, we fit our models on a stratified subsample. Specifically, we restrict attention to students with **at least 30** answered questions, then sample **500** students at random and retain up to **10,000** total answers for fitting.
 
-## 3.2 Variables
+### 3.2 Variables
 Each observation corresponds to a student’s response to a single question. The primary fields used in modeling are:
 
 - **UserId, QuestionId, AnswerId**: identifiers (keys).
@@ -60,7 +66,7 @@ Each observation corresponds to a student’s response to a single question. The
 - **Gender**: categorical covariate from student metadata (including an “unknown/other” category as needed).
 - **skill_indices**: a set of skill/topic identifiers associated with each question (see Section 3.3).
 
-## 3.3 Ability taxonomy (skill hierarchy)
+### 3.3 Ability taxonomy (skill hierarchy)
 Items are tagged with skills from a hierarchical subject tree. We use this taxonomy to define ability parameters at multiple levels of granularity, ranging from coarse strands to fine-grained topics. The hierarchy can be summarized as:
 
 | Level | # of abilities | Interpretation / examples |
@@ -70,11 +76,15 @@ Items are tagged with skills from a hierarchical subject tree. We use this taxon
 | 2 | 69 | Intermediate topics (e.g., Fractions, Decimals, Straight Line Graphs, …) |
 | 3 | 308 | Fine-grained tagged topics (e.g., BIDMAS, Expanding Single Brackets, …) |
 
-# 4 Bayesian Hierarchical IRT Model
+### 4 Bayesian Hierarchical IRT Model
 
-Model 1 (naive) represents each student with **9** ability parameters, while Model 2 (complex) uses **69** ability parameters. This increase substantially impacts computation and motivates additional Stan optimizations for the complex model.
+For the naive model we only considered 9 parameters for the student abilities whereas for the complex model we 69 parameters for the student abilities. This comes with a significant difference in computation as well as optimisations in stan. The structure of the data for question skills was a forest of skills. Specifically two trees one with root maths and the other with root science. Skills are organised as a forest of two trees. Each question corresponds to a subtree of this forest, sharing at least one root and one leaf with the global structure.
 
-## 4.1 Likelihood
+The two models differ only in which level of this tree they operate on: the 9-skill model uses nodes at depth 2 from the leaves (coarse, near-root), while the 69-skill model uses nodes at depth 1 (fine-grained, near-leaf).
+
+**Note:** For variational inference we used mean field in stan thus our variational family was $\mathscr{Q}= \{q_\phi : \phi \in \Phi\}$.
+
+### 4.1 Likelihood
 
 $$y | \theta, d, \gamma, \alpha \;\sim\; \text{Bernoulli}\!\left(\gamma + (\alpha - \gamma)\,\text{logistic}(\theta - d)\right)$$
 
@@ -82,14 +92,14 @@ $$t | E, \mu_t, \sigma_t \;\sim\; \pi \cdot \mathcal{N}(\mu_t, \sigma_t^2) + (1 
 
 $E(t)|\beta_t = \text{logistic}(\beta_t \cdot t)$ is the probability of being in the engaged state (as opposed to the guessing state), increasing with response time.
 
-## 4.2 Latent skill
+### 4.2 Latent Skill
 
 The effective skill of a player on a question is the average of their latent skills across the skills that question requires.
 
 $$\theta = \frac{1}{|S|}\sum_{k \in S} u_k$$
 Note if we did not do this we would have questions demanding more skills being more likely to be solved. Additionally if we added weights we might get into identifiability issues so we decided to take an average.
 
-## 4.3 Player skill hierarchy
+### 4.3 Player Skill Hierarchy
 
 Player skills are drawn from a population whose mean is shifted by player-level covariates:
 
@@ -101,11 +111,11 @@ $$\beta^{\text{age}}_k,\; \beta^{\text{gender}}_k \;\sim\; \mathcal{N}(0, 0.5^2)
 
 Here $z$ is a player's standardised age and $g$ is a binary gender indicator. Note that we had to normalize age to avoid this parameter having a non relative effect.
 
-## 4.4 Question difficulty
+### 4.4 Question Difficulty
 
 $$d \sim \mathcal{N}(0, 1)$$
 
-## 4.5 3PL asymptotes
+### 4.5 3PL Asymptotes
 
 The guessing floor $\gamma$ rises for fast responses: $\gamma = \gamma_0 + \gamma_\Delta \cdot \mathbf{1}[\text{fast}]$. The bounds ensure $\gamma < \alpha$ by construction.
 
@@ -114,13 +124,15 @@ $$\gamma_0 \sim \mathcal{N}(0.25, 0.08^2), \qquad \gamma_\Delta \sim \mathcal{N}
 $\gamma_0$ is the baseline guessing floor. Ie if someone is immediately guessing then due to their being four options we would say they have a 25% chance of getting it correct.  $\gamma_\Delta$ is the small bump added if the response was fast, making it more likely the user guessed. 
 
 
-## 4.6 Response time parameters
+### 4.6 Response Time Parameters
 
 $$\mu_t \sim \mathcal{N}(4.5, 1^2), \qquad \sigma_t \sim \text{Exponential}(1), \qquad \beta_t \sim \mathcal{N}(1, 0.5^2)$$
 
-# 5 Posterior Computation & Inference Methods
+After doing some rudimental analysis of histogram plots it was clear that the time parameters followed an exponential distribution and that students were more likily to get the problem correct if they spent more time on the problem.
 
-## 5.1 What is being approximated? 
+### 5 Posterior Computation & Inference Methods
+
+### 5.1 What is being approximated? 
 Let $y$ denote the observed data (correct/incorrect responses, response times, and observed covariates used in the likelihood), and let $\theta$ denote the collection of unknown quantities in the model (global parameters, skill-related parameters, and student-level latent variables). Our inferential target is the Bayesian posterior distribution
 $$
 p(\theta \mid y) \propto p(y \mid \theta)\,p(\theta),
@@ -136,7 +148,7 @@ As a second approach, we use variational inference (VI) in Stan. VI approximates
 ### 5.4 Two-model × Two-method design
 We fit two probabilistic models (Model 1: simple; Model 2: complex) and compute their posteriors using two inference methods (HMC/NUTS and VI). Section 6 evaluates (i) the reliability of the HMC approximation via MCMC diagnostics, (ii) VI approximation quality via direct comparison to HMC, and (iii) goodness-of-fit via posterior predictive checks and predictive scores.
 
-# 6 Critical Evaluation & Diagnostics
+### 6 Critical Evaluation & Diagnostics
 
 ### 6.1 Posterior approximation diagnostics (HMC reliability + VI approximation error)
 We evaluate posterior approximation quality in two ways. First, we assess whether HMC/NUTS has mixed well enough to provide reliable Monte Carlo estimates using standard Stan diagnostics: $\hat R$ (between-chain agreement) and effective sample size $N_{\mathrm{eff}}$ (amount of independent information after accounting for autocorrelation). Second, we assess VI approximation error by directly comparing VI-based posterior summaries to HMC-based summaries for key low-dimensional parameters.
@@ -235,7 +247,7 @@ knitr::kable(
 
 The estimated difference in total ELPD (Model 2 minus Model 1) is **97.654**, corresponding to an average gain of about **0.0098** ELPD per observation in this subsample.
 
-# 7 Conclusion
+### 7 Conclusion
 
 ### 7.1 Key findings
 Posterior predictive checks show both models match the **overall mean accuracy** in the subsample (Section 6.2). By approximate LOO ELPD (Section 6.3), **Model 2 (complex)** predicts modestly better than **Model 1 (simple)** on this subset. Mean-field VI is fast but can shift location and understate uncertainty for some globals (Section 6.1), so we rely on HMC/NUTS when diagnostics are acceptable.
@@ -277,13 +289,16 @@ We use weakly informative priors to regularize the hierarchy and encode basic co
 
 We did not refit under alternative priors, so conclusions are conditional on these choices. Future work includes targeted prior sensitivity checks, richer PPCs (e.g., response-time and accuracy-by-skill), structured VI, and PSIS-LOO diagnostics (Pareto-\(k\)) when available.
 
-# Appendix
+### 7.5 Contributions
+This project was executed collaboratively. We trained the models using a Kaggle notebook environment and consolidated outputs into this report. Karn Shoker (59310094) led model training, diagnostics, and report writing. Joseph Lardner-Burke (44848893) led model development and contributed to report writing.
+
+### Appendix
 
 ```{r appendix-float-barrier, echo=FALSE, results='asis', comment=NA}
 knitr::asis_output("\\clearpage\\FloatBarrier\n")
 ```
 
-## A.1 Convergence diagnostics distributions
+### A.1 Convergence diagnostics distributions
 
 ```{r convergence-histograms-appendix, echo=FALSE, message=FALSE, warning=FALSE, results='asis', comment=NA}
 knitr::asis_output(paste0(
@@ -304,13 +319,13 @@ knitr::asis_output(paste0(
 ))
 ```
 
-## A.2 LOO per-observation contributions
+### A.2 LOO per-observation contributions
 
 ```{r loo-per-obs-hist-appendix, echo=FALSE, message=FALSE, warning=FALSE, fig.pos='H', fig.cap="Histogram of per-observation log predictive density contributions under approximate LOO (Model 2)."}
 knitr::include_graphics("output/report_assets/figures/loo_per_obs_lpd_hist.png")
 ```
 
-## A.3 Skill-specific demographic effects flagged by 90% intervals
+### A.3 Skill-specific demographic effects flagged by 90% intervals
 
 ```{r demographics-appendix-table, echo=FALSE, message=FALSE, warning=FALSE}
 lines <- readLines("output/report_assets/tables/report_conclusions.txt", warn = FALSE)
@@ -360,22 +375,19 @@ if (nrow(dem) == 0) {
 ```
 
 
-## A.4 AI disclosure
-We used AI-assisted tools to help with **formatting** and **improving writing flow** (e.g., restructuring sections, tightening phrasing, and fixing LaTeX/RMarkdown rendering issues). All modeling decisions, analysis outputs, and final claims were reviewed and edited by the authors.
+### A.4 AI disclosure
+We used AI-assisted tools to support **formatting**, **writing flow**, and **code generation for data processing/analysis pipelines** (e.g., restructuring sections, tightening phrasing, drafting helper scripts, and resolving LaTeX/RMarkdown rendering issues). All modeling decisions, analysis outputs, and final claims were reviewed and edited by the authors.
 
-## A.5 Contributions
-Karn Shoker (59310094) led model training, diagnostics, and report writing. Joseph Lardner-Burke (44848893) led model development and contributed to report writing.
-
-## A.6 Reproducibility and repository
+### A.5 Reproducibility and repository
 Code and artifacts used to generate this report are available at [`https://github.com/kshoker12/STAT_405_Project`](https://github.com/kshoker12/STAT_405_Project).
 
-## A.7 Question discrimination (exploratory)
+### A.6 Question discrimination (exploratory)
 
 ```{r appendix-question-discrimination, echo=FALSE, fig.pos='H', fig.cap="Question discrimination vs difficulty (exploratory). Each hexbin aggregates questions; the x-axis is an empirical discrimination index and the y-axis is standardized difficulty. The curve overlays an expected 3PL relationship."}
 knitr::include_graphics("output/report_assets/figures/question_discrimination_chart.png")
 ```
 
-# References
+### References
 - Bainter, S. A., & Foster, J. S. (2019). *A brief introduction to Bayesian item response theory models*. (Course-referenced background on Bayesian IRT).
 - Béguin, A. A., & Glas, C. A. W. (2001). *MCMC estimation and some model-fit analysis of multidimensional IRT models*. Psychometrika.
 - Bürkner, P.-C. (2021). *Bayesian item response modeling in R with brms and Stan*. Journal of Statistical Software.
