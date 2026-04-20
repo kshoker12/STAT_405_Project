@@ -5,8 +5,6 @@ processing/processed_data/
 processing_naive/processed_data/
 output/all_student_profiles.csv
 
-
-
 # Environment variables and API keys
 .env
 .env.local
