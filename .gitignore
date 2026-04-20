@@ -11,3 +11,5 @@ output/all_student_profiles.csv
 .env.local
 *.key
 config/secrets.py
+
+processing/processed_data/
